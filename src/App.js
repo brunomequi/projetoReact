@@ -1,64 +1,51 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 function App() {
-  const [nome, setNome] = useState('');
-  const [email, setEmail] = useState('');
-  const [idade, setIdade] = useState('');
-  const [user, setUser] = useState({});
+  const [input, setInput] = useState('');
+  const [tarefas, setTarefas] = useState([
+    'Pagar conta de luz',
+    'Estudar react',
+  ]);
+
+  useEffect(() => {
+    const tarefasStorage = localStorage.getItem('@tarefa');
+    if (tarefasStorage) {
+      setTarefas(JSON.parse(tarefasStorage));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('@tarefa', JSON.stringify(tarefas)); //salva no local storage
+  }, [tarefas]);
 
   function handleRegister(e) {
     e.preventDefault();
-    setUser({
-      nome: nome,
-      idade: idade,
-      email: email,
-    });
-    alert(`Olá ${nome}, seu e-mail é ${email} e você tem ${idade} anos`);
+    setTarefas([...tarefas, input]);
+    setInput('');
   }
 
   return (
     <div>
       <form onSubmit={handleRegister}>
-        <h1>Cadastrando usuário</h1>
-        <label>Nome :</label>
+        <h1>Cadastrando tarefa</h1>
+        <label>Nome da tarefa :</label>
         <br />
         <input
-          placeholder="Digite seu nome"
+          placeholder="Digite uma tarefa"
           type="text"
-          value={nome}
-          onChange={(e) => setNome(e.target.value)}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
         />
-        <br />
-        <label>E-mail :</label>
-        <br />
-        <input
-          placeholder="Digite seu E-mail"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <br />
-        <label>Idade :</label>
-        <br />
-        <input
-          placeholder="Digite sua idade"
-          type="number"
-          value={idade}
-          onChange={(e) => setIdade(e.target.value)}
-        />
-        <br />
         <button type="submit">Registrar</button>
       </form>
 
       <br />
       <br />
-      <div>
-        <span>Bem vindo {user.nome}</span>
-        <br />
-        <span>Sua idade {user.email}</span>
-        <br />
-        <span>Seu e-mail {user.idade}</span>
-      </div>
+      <ul>
+        {tarefas.map((tarefa) => (
+          <li key={tarefa}>{tarefa}</li>
+        ))}
+      </ul>
     </div>
   );
 }
